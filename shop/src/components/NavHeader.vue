@@ -103,6 +103,7 @@ export default {
         Modal
     }
 }
+
 </script>
  
 <style scoped>

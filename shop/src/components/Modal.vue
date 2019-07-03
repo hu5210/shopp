@@ -15,6 +15,7 @@
             </div>
             <div class="btn-wrap">
                 <slot name="btn"></slot>
+                <slot name="btn"></slot>
             </div>
           </div>
         </div>
