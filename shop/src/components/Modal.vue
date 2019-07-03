@@ -14,7 +14,8 @@
               <slot name="main"></slot>
             </div>
             <div class="btn-wrap">
-                <a class="btn"><slot name="btn"></slot></a>
+                <slot name="btn"></slot>
+                <slot name="btn"></slot>
             </div>
           </div>
         </div>
