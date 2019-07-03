@@ -99,16 +99,24 @@
     </div>
     </div>
     <Modal :isMdShow="testshow" @close='modelshow'></Modal>
-    <!--登录出现 -->
-        <template>
-
+    <Modal :isMdShow="isCartErrorShowFlag" @close='isCartErrorShowFlag = false'>
+      <template v-slot:main>
+            <svg class="icon-status-ok">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-status-ok"></use>
+            </svg>
+            <span>加入购物车成!</span>
         </template>
-        <template>
-            
+        <template v-slot:btn>
+            <a class="btn btn--m" href="javascript:;" @click="isCartErrorShowFlag=false">
+            继续购物
+            </a>
+            <router-link class="btn btn--m btn--red" href="javascript:;" to="/cart">
+            查看购物车
+            </router-link>
         </template>
-        <template>
-            
-        </template>
+    </Modal>
+     <input type="button" value="加入购物车弹框1" @click="isCartErrorShowFlag = true">
+    <input type="button" value="加入购物车弹框2" @click="isCartOkShowFlag = true">
     <NavFooter></NavFooter>
  </div>
 </template>
@@ -125,7 +133,9 @@ import Modal from '@/components/Modal'
 export default {
     data(){
      return{
-         testshow:true
+         testshow:false,
+         isCartErrorShowFlag:false,
+         isCartOkShowFlag:false
      }
     },
     methods:{
