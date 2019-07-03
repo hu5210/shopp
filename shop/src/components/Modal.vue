@@ -5,7 +5,7 @@
         <div class="md-modal-inner">
           <!-- 弹框关闭 -->
           <div class="md-top">
-          <slot name="title"></slot>
+            <slot name="title"></slot>
             <button class="md-close" @click="modelshow">Close</button>
           </div>
           <!-- 弹框内数据 -->
@@ -14,7 +14,7 @@
               <slot name="main"></slot>
             </div>
             <div class="btn-wrap">
-               <slot name="btn"></slot>
+                <slot name="btn"></slot>
             </div>
           </div>
         </div>
