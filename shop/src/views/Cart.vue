@@ -66,44 +66,44 @@
           </ul>
         </div>
         <ul class="cart-item-list">
-          <li>
+          <li v-for='(cart,index) in cartlist' v-bind:key="index">
             <div class="cart-tab-1">
               <div class="cart-item-check">
-                <a href="javascipt:;" class="checkbox-btn item-check-btn check" >
+                <a href="javascipt:;" class="checkbox-btn item-check-btn" v-bind:class="{'check':cart.state=='1'}" @click="updatacart(cart.goods_id,'state')">
                   <svg class="icon icon-ok">
                     <use xlink:href="#icon-ok"></use>
                   </svg>
                 </a>
               </div>
               <div class="cart-item-pic">
-                <img src="../../static/1.jpg">
+                <img v-bind:src="cart.img2">
               </div>
               <div class="cart-item-title">
-                <div class="item-name">XX</div>
+                <div class="item-name">{{cart.title}}</div>
               </div>
             </div>
             <div class="cart-tab-2">
-              <div class="item-price">1000</div>
+              <div class="item-price">{{cart.price}}</div>
             </div>
             <div class="cart-tab-3">
               <div class="item-quantity">
                 <div class="select-self select-self-open">
                   <div class="select-self-area">
-                    <a class="input-sub">-</a>
-                    <span class="select-ipt">1</span>
-                    <a class="input-add">+</a>
+                    <a class="input-sub"  @click="updatacart(cart.goods_id,'-')">-</a>
+                    <span class="select-ipt">{{cart.num}}</span>
+                    <a class="input-add" @click="updatacart(cart.goods_id,'jia')">+</a>
                   </div>
                 </div>
               </div>
             </div>
             <div class="cart-tab-4">
-              <div class="item-price-total">100</div>
+              <div class="item-price-total">{{cart.num*cart.price}}</div>
             </div>
             <div class="cart-tab-5">
               <div class="cart-item-opration">
                 <a href="javascript:;" class="item-edit-btn">
-                  <svg class="icon icon-del">
-                    <use xlink:href="#icon-del"></use>
+                  <svg class="icon icon-del" @click="updatacart(cart.goods_id,'del')">
+                    <use xlink:href="#icon-del" ></use>
                   </svg>
                 </a>
               </div>
@@ -126,7 +126,7 @@
         </div>
         <div class="cart-foot-r">
           <div class="item-total">
-            总价: <span class="total-price">500</span>
+            总价: <span class="total-price">{{cartgoodspricetotal}}</span>
           </div>
           <div class="btn-wrap">
             <a class="btn btn--red" onclick="location.href='address.html'">结算</a>
@@ -149,7 +149,52 @@ import '@/assets/css/header.css'
 import NavHeader from '@/components/NavHeader'
 import NavFooter from '@/components/NavFooter'
 import NavBread from '@/components/NavBread'
+import axios from 'axios';
 export default {
+   created(){
+this.initdata()
+    },
+  data(){
+    return{
+      cartgoodspricetotal:0,
+      cartlist:[]
+    }
+  },
+  methods:{
+    initdata(){
+      axios({
+        url:'http://118.31.9.103/api/cart/index',
+        method:'post',
+        data:`userId=1`
+      }).then(res=>{
+        this.cartlist=res.data.data
+        //遍历统计总价
+               this.cartgoodspricetotal = 0  //每次重新获取数据，都要归零 否则累计
+        for(let i=0; i<this.cartlist.length; i++){
+                    if (this.cartlist[i].state == "1") {
+                        this.cartgoodspricetotal += this.cartlist[i].price *  this.cartlist[i].num
+                    }
+                }
+      }).catch(error=>{
+     console.log(error)
+      })
+    },
+    updatacart(goodsId,state){
+       axios({
+        url:'http://118.31.9.103/api/cart/edit',
+        method:'post',
+        data:`userId=1&goodsId=${goodsId}&state=${state}`
+      }).then(res=>{
+        if(res.data.meta.state==201){
+          //更新从新让页面发生请求
+          this.initdata()
+          alert('操作成功')
+        }
+      }).catch(error=>{
+     alert(res.data.meta.msg)
+      })
+    },
+  },
     components: {
         // NavHeader: NavHeader
         NavHeader,
