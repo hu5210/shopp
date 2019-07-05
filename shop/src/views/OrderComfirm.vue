@@ -54,31 +54,31 @@
             </ul>
           </div>
           <ul class="cart-item-list">
-            <li>
+            <li v-for="(crat,index) in cartlist" v-bind:key="index">
               <div class="cart-tab-1">
                 <div class="cart-item-pic">
-                  <img src="../../static/1.jpg" alt="">
+                  <img v-bind:src="crat.img2" alt="">
                 </div>
                 <div class="cart-item-title">
-                  <div class="item-name">小米6</div>
+                  <div class="item-name">{{crat.title}}</div>
 
                 </div>
               </div>
               <div class="cart-tab-2">
-                <div class="item-price">2499</div>
+                <div class="item-price">{{crat.price}}</div>
               </div>
               <div class="cart-tab-3">
                 <div class="item-quantity">
                   <div class="select-self">
                     <div class="select-self-area">
-                      <span class="select-ipt">×1</span>
+                      <span class="select-ipt">×{{crat.num}}</span>
                     </div>
                   </div>
                   <div class="item-stock item-stock-no">数量</div>
                 </div>
               </div>
               <div class="cart-tab-4">
-                <div class="item-price-total">2499</div>
+                <div class="item-price-total">{{crat.price*crat.num}}</div>
               </div>
             </li>
           </ul>
@@ -91,7 +91,7 @@
           <ul>
             <li class="order-total-price">
               <span>总价</span>
-              <span>1999</span>
+              <span>{{cartgoodspricetotal}}</span>
             </li>
           </ul>
         </div>
@@ -102,7 +102,7 @@
           <!-- <button class="btn btn--m">Previous</button> -->
         </div>
         <div class="next-btn-wrap">
-          <button class="btn btn--m btn--red" onclick="location.href='orderSuccess.html'">创建订单</button>
+          <button class="btn btn--m btn--red" @click="gosuccess">创建订单</button>
         </div>
       </div>
     </div>
@@ -112,7 +112,55 @@
 </template>
  
 <script>
+import axios from 'axios'
 export default {
+  //声明模型
+  data(){
+    return{
+      cartgoodspricetotal:0,
+      cartlist:[]
+    }
+  },
+  //模型已经初始化
+  created(){
+this.initdata()
+  },
+  //普通方法
+  methods:{
+    gosuccess(){
+      axios({
+        url:'http://118.31.9.103/api/order/create',
+        method:'post',
+        data:`userId=1`
+      }).then(res=>{
+        if(res.data.meta.state==201){
+          alert("创建成功")
+          this.$router.push({path:'./Ordersuccess/'+res.data.data})
+        }else{
+          alert(res.data.meta.msg)
+        }
+      }).catch(error=>{
+        console.log(error)
+      })
+    },
+    initdata(){
+      axios({
+        url:'http://118.31.9.103/api/cart/index',
+        data:`userId=1&isChoose=true`,
+        method:'post',
+      }).then(res=>{
+        this.cartlist = res.data.data
+         this.cartgoodspricetotal = 0  //每次重新获取数据，都要归零 否则累计
+        for(let i=0; i<this.cartlist.length; i++){
+          if(this.cartlist[i].state=='1'){//勾选的时候
+            this.cartgoodspricetotal += this.cartlist[i].price *  this.cartlist[i].num
+          }
+        }
+      }).catch(error=>{
+
+      })
+    }
+  }
  }
 </script>
  

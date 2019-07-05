@@ -55,7 +55,7 @@ export default new Router({
       component:OrderComfirm
     },
     {
-      path: '/ordersuccess',
+      path: '/ordersuccess/:id',
       name: 'Ordersuccess',
       component:Ordersuccess
     },

@@ -19,8 +19,8 @@
       <div class="order-create-main">
         <h3>祝贺你! <br>你的订单创建成功!</h3>
         <p>
-          <span>订单编号：100000001</span>
-          <span>订单总价：1000</span>
+          <span>订单编号：{{orderinfo.order_no}}</span>
+          <span>订单总价：{{orderinfo.total_price}}</span>
         </p>
         <div class="order-create-btn-wrap">
           <div class="btn-l-wrap">
@@ -38,8 +38,33 @@
 </template>
  
 <script>
+import axios from 'axios'
 export default {
- }
+  data(){
+return{
+  orderinfo:{},
+}
+  },
+  created(){
+this.initdata()
+  },
+  methods:{
+   initdata() {
+     let orderId = this.$route.params.id
+      axios({
+        url:"http://118.31.9.103/api/order/detail",
+        method:"post",
+        data:`userId=1&orderId=${orderId}`
+      }).then(res => {
+        //将接口数据 保存到 模型中
+        this.orderinfo = res.data.data
+      }).catch(error=>{
+        console.log(error)
+      })
+    }
+    }
+  }
+
 </script>
  
 <style scoped>

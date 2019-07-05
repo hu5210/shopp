@@ -55,11 +55,11 @@
       <div class="addr-list-wrap">
         <div class="addr-list">
           <ul>
-            <li>
+            <li v-for="(address,index) in addresslist" v-bind:key="index" @click='updataaddress(address.id)'>
               <dl>
-                <dt>XXX</dt>
-                <dd class="address">朝阳公园</dd>
-                <dd class="tel">10000000000</dd>
+                <dt>{{address.nickname}}</dt>
+                <dd class="address">{{address.address}}</dd>
+                <dd class="tel">{{address.tel}}</dd>
               </dl>
               <div class="addr-opration addr-del">
                 <a href="javascript:;" class="addr-del-btn">
@@ -69,7 +69,7 @@
               <div class="addr-opration addr-set-default">
                 <a href="javascript:;" class="addr-set-default-btn"><i>设置</i></a>
               </div>
-              <div class="addr-opration addr-default">默认收货地址</div>
+              <div class="addr-opration addr-default" v-if="address.default=='1'">默认收货地址</div>
             </li>
             <li class="addr-new">
               <div class="add-new-inner">
@@ -94,7 +94,7 @@
       </div>
 
       <div class="next-btn-wrap">
-        <a class="btn btn--m btn--red" onclick="location.href='orderConfirm.html'">下一步</a>
+        <a class="btn btn--m btn--red" @click="goordercomfirm">下一步</a>
       </div>
     </div>
   </div>
@@ -103,7 +103,50 @@
 </template>
  
 <script>
+import axios from 'axios'
 export default {
+   created() {
+    this.initdata()
+  },
+  data(){
+    return{
+addresslist:[],
+    }
+  },
+methods:{
+  initdata(){
+    axios({
+      url:'http://118.31.9.103/api/address/index',
+      data:`userId=1`,
+      method:'post',
+    }).then(res=>{
+      console.log(res)
+       //接口请求成功，将接口数据保存到模型中
+          this.addresslist = res.data.data //切记：必须在模型中定义addresslist
+    }).catch(error=>{
+      console.log(error)
+    })
+  },
+  updataaddress(addressId){
+      axios({
+            url:"http://118.31.9.103/api/address/defaultAddress",
+            method:"post",
+            data:`userId=1&addressId=${addressId}`
+        }).then(res => {
+            if (res.data.meta.state == 201) {
+                //更新成功过后，重新发送请求，让页面数据变化
+                this.initdata()
+            } else {
+                alert(res.data.meta.msg)
+            }
+        }).catch(error=>{
+            console.log(error)
+          })
+  },
+  goordercomfirm(){
+    this.$router.push({path:'/OrderComfirm'})
+  }
+}
  }
 </script>
  

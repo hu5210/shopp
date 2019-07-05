@@ -129,7 +129,7 @@
             总价: <span class="total-price">{{cartgoodspricetotal}}</span>
           </div>
           <div class="btn-wrap">
-            <a class="btn btn--red" onclick="location.href='address.html'">结算</a>
+            <a class="btn btn--red" @click="upaddress">结算</a>
           </div>
         </div>
       </div>
@@ -161,6 +161,9 @@ this.initdata()
     }
   },
   methods:{
+    upaddress(){
+      this.$router.push({path:'/Address'})
+    },
     initdata(){
       axios({
         url:'http://118.31.9.103/api/cart/index',
@@ -188,7 +191,6 @@ this.initdata()
         if(res.data.meta.state==201){
           //更新从新让页面发生请求
           this.initdata()
-          alert('操作成功')
         }
       }).catch(error=>{
      alert(res.data.meta.msg)

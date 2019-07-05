@@ -65,6 +65,15 @@
     </div>
     </div>
     <Modal :isMdShow="testshow" @close='modelshow'></Modal>
+     <!-- 加入购物车弹框1 -->
+    <Modal v-bind:isMdShow="isCartOkShowFlag" @close="isCartOkShowFlag = false">
+        <template v-slot:main>
+            请先登录，否则无法加入到购物车中!
+        </template>
+        <template v-slot:btn>
+            <a class="btn btn--m" href="javascript:;" @click="isCartOkShowFlag = false">关闭</a>
+        </template>
+    </Modal>
     <Modal :isMdShow="isCartErrorShowFlag" @close='isCartErrorShowFlag = false'>
       <template v-slot:main>
             <svg class="icon-status-ok">
