@@ -19,6 +19,9 @@
   background-image: url("/static/icon.png");
   background-repeat: no-repeat;
 }
+.navbar-brand-logo{
+  height: 80px
+}
 .regi_form_input .IconPwd {
   background-position: -198px 3px;
 }

@@ -50,11 +50,12 @@ this.initdata()
   },
   methods:{
    initdata() {
+     let userId=localStorage.getItem('userId')
      let orderId = this.$route.params.id
       axios({
         url:"http://118.31.9.103/api/order/detail",
         method:"post",
-        data:`userId=1&orderId=${orderId}`
+        data:`userId=${userId}&orderId=${orderId}`
       }).then(res => {
         //将接口数据 保存到 模型中
         this.orderinfo = res.data.data

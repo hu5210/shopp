@@ -128,10 +128,11 @@ this.initdata()
   //普通方法
   methods:{
     gosuccess(){
+      let userId=localStorage.getItem('userId')
       axios({
         url:'http://118.31.9.103/api/order/create',
         method:'post',
-        data:`userId=1`
+        data:`userId=${userId}`
       }).then(res=>{
         if(res.data.meta.state==201){
           alert("创建成功")
@@ -144,9 +145,10 @@ this.initdata()
       })
     },
     initdata(){
+      let userId=localStorage.getItem('userId')
       axios({
         url:'http://118.31.9.103/api/cart/index',
-        data:`userId=1&isChoose=true`,
+        data:`userId=${userId}&isChoose=true`,
         method:'post',
       }).then(res=>{
         this.cartlist = res.data.data

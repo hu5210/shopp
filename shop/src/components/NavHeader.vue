@@ -24,14 +24,14 @@
     <div class="navbar">
         <div class="navbar-left-container">
         <a href="/">
-            <img class="navbar-brand-logo" src="static/logo.png"></a>
+            <img class="navbar-brand-logo" src="../assets/logo.jpg"></a>
         </div>
         <div class="navbar-right-container" style="display: flex;">
         <div class="navbar-menu-container">
             <!--<a href="/" class="navbar-link">我的账户</a>-->
-            <span class="navbar-link"></span>
-            <a href="javascript:void(0)" class="navbar-link" @click=" form.isLoginShowFlag = true">登录</a>
-            <a href="javascript:void(0)" class="navbar-link">退出</a>
+            <span class="navbar-link">{{this.nickname}}</span>
+             <a href="javascript:void(0)" class="navbar-link" v-if="nickname"  @click="logout">退出</a>
+            <a href="javascript:void(0)" class="navbar-link" @click=" form.isLoginShowFlag = true" v-else>登录</a>
             <div class="navbar-cart-container">
             <span class="navbar-cart-count"></span>
             <a class="navbar-link navbar-cart-link" href="./cart.html">
@@ -74,12 +74,39 @@
 import '../assets/css/login.css'
 //导入弹框组件
 import Modal from '@/components/Modal'
+import axios from 'axios'
 export default {
     //声明普通方法
     methods: {
+        //退出
+        logout(){
+            localStorage.removeItem("userId")
+            localStorage.removeItem("username")
+            //1-刷新，2-通过双向绑定让当前页面生效
+            this.nickname = ""
+        },
         //登录数据处理
         login() {
-
+             //1.只要重新发送请求就清除提示信息
+            this.form.error=''
+            axios({
+                method:'post',
+                url:'http://118.31.9.103/api/login/login',
+                data:`username=${this.form.username}&password=${this.form.password}`,
+            }).then(res=>{
+                if(res.data.meta.state==200){
+                   //通过html web储存 保护 用户信息
+                   localStorage.setItem('userId',res.data.data.id)
+                   localStorage.setItem('username',res.data.data.username)
+                    //1-刷新，2-通过双向绑定让当前页面生效
+                    this.nickname=localStorage.getItem('username'),
+                   this.form.isLoginShowFlag = false
+                }else{
+                     this.form.error=res.data.meta.msg
+                }
+            }).catch(error=>{
+        console.log(error)
+            })
         },
         //关闭登录框
         closeModal() {
@@ -89,6 +116,7 @@ export default {
     //声明模型数据
     data() {
         return {
+            nickname:localStorage.getItem('username'),
             form: {
                 error: '',
                 username: '',

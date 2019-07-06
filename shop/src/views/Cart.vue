@@ -165,10 +165,11 @@ this.initdata()
       this.$router.push({path:'/Address'})
     },
     initdata(){
+      let userId=localStorage.getItem('userId')
       axios({
         url:'http://118.31.9.103/api/cart/index',
         method:'post',
-        data:`userId=1`
+        data:`userId=${userId}`
       }).then(res=>{
         this.cartlist=res.data.data
         //遍历统计总价
@@ -183,10 +184,11 @@ this.initdata()
       })
     },
     updatacart(goodsId,state){
+      let userId=localStorage.getItem('userId')
        axios({
         url:'http://118.31.9.103/api/cart/edit',
         method:'post',
-        data:`userId=1&goodsId=${goodsId}&state=${state}`
+        data:`userId=${userId}&goodsId=${goodsId}&state=${state}`
       }).then(res=>{
         if(res.data.meta.state==201){
           //更新从新让页面发生请求

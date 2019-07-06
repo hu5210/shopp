@@ -43,8 +43,8 @@
         </div>
 
         <!-- search result accessories list -->
-        <div class="accessory-list-wrap">
-            <div class="accessory-list col-4">
+        <div class="accessory-list-wrap bscroll"   ref="wrapperMenu">
+            <div class="accessory-list col-4 ">
             <ul>
                 <li v-for="(goods,index) in goodList" v-bind:key="index">
                 <div class="pic">
@@ -90,8 +90,8 @@
             </router-link>
         </template>
     </Modal>
-     <input type="button" value="加入购物车弹框1" @click="isCartErrorShowFlag = true">
-    <input type="button" value="加入购物车弹框2" @click="isCartOkShowFlag = true">
+     <input type="button" value="加入购物车弹框1" @click="isCartErrorShowFlag = true" style="display:none">
+    <input type="button" value="加入购物车弹框2" @click="isCartOkShowFlag = true" style="display:none">
     <NavFooter></NavFooter>
  </div>
 </template>
@@ -106,23 +106,31 @@ import NavFooter from '@/components/NavFooter'
 import NavBread from '@/components/NavBread'
 import Modal from '@/components/Modal'
 import axios from 'axios'
+import BScroll from "better-scroll";
 export default {
     created(){
 this.initdata()
+setTimeout(() => {
+                this.$nextTick(()=>{
+                    this.scrollFn()
+                })
+            }, 20)
     },
     data(){
      return{
+         dropDown:false,
+         pagesize:8,
          maxprice:'all',
          minprice:'all',
          goodList:[],//接收数据
          order:false,
-         testshow:false,//申明弹框
+         testshow:false,//声明弹框
          isCartErrorShowFlag:false,
          isCartOkShowFlag:false
      }
     },
     methods:{
-        goodsWhere(minprice,maxprice){
+         goodsWhere(minprice,maxprice){
             this.initdata()
             this.minprice=minprice
             this.maxprice=maxprice
@@ -135,9 +143,16 @@ this.initdata()
           this.testshow=false
       },
       cartdata(goodsId){
+          //用户是否登录
+          let userId=localStorage.getItem('userId')
+          if(!userId){
+            this.isCartOkShowFlag =true
+             return//截断下部的代码
+          }
+          //用户登录发布异步请求
         axios({
            url:'http://118.31.9.103/api/cart/create',
-           data:`userId=1&goodsId=${goodsId}`,
+           data:`userId=${userId}&goodsId=${goodsId}`,
            method:'post', 
         }).then(res=>{
             if(res.data.meta.state==201){
@@ -149,18 +164,63 @@ this.initdata()
             console.log(error)
         }) 
       },
-      initdata(){
+        initdata(){
           let order=this.order? 'asc':'desc'
           axios({
-              url:`http://118.31.9.103/api/goods/index?order=${order}&maxprice=${this.maxprice}&minprice=${this.minprice}`,
+              url:`http://118.31.9.103/api/goods/index?order=${order}&maxprice=${this.maxprice}&minprice=${this.minprice}&pagesize=${this.pagesize}`,
               method:'get',
           }).then(res=>{
               this.goodList=res.data.data
+              console.log(this.goodList)
           }).catch(error=>{
 
           })
-      }
+      },
+        scrollFn(){
+            this.$nextTick(() => {
+                if (!this.scroll) {
+                    this.scroll = new BScroll(this.$refs.wrapperMenu, {
+                        click: true,
+                        
+                    });
+                }else{
+                    this.scroll.refresh();
+                }
+                this.scroll.on('scroll', (pos) => {
+                    console.log(pos.y,this.dropDown)
+                    //如果下拉超过50px 就显示下拉刷新的文字
+                    if(pos.y>50){
+                        this.dropDown = true
+                    }else{
+                        this.dropDown = false
+                    }
+                })
+                //touchEnd（手指离开以后触发） 通过这个方法来监听下拉刷新
+                this.scroll.on('touchEnd', (pos) => {
+                    // 下拉动作
+                    if(pos.y > 50){
+                        console.log("下拉刷新成功")
+                        this.dropDown = false
+                    }
+                    //上拉加载 总高度>下拉的高度+10 触发加载更多
+                    if(this.scroll.maxScrollY>pos.y+10){
+                        console.log("加载更多")
+                        //使用refresh 方法 来更新scroll  解决无法滚动的问题
+                        this.scroll.refresh()
+                    }
+                })
+            });
+        },
+    //    mounted(){
+    //       setTimeout(() => {
+    //             this.$nextTick(()=>{
+    //                 this.scrollFn()
+    //             })
+    //         }, 20)
+    //         console.log(2)
+    // },
     },
+    
     components: {
         // NavHeader: NavHeader
         NavHeader,
@@ -175,5 +235,9 @@ this.initdata()
 </script>
  
 <style scoped>
- 
+ .bscroll{
+    width: 100%;
+    overflow: hidden;
+}
+
 </style>

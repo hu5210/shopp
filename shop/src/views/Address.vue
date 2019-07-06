@@ -115,9 +115,10 @@ addresslist:[],
   },
 methods:{
   initdata(){
+    let userId=localStorage.getItem('userId')
     axios({
       url:'http://118.31.9.103/api/address/index',
-      data:`userId=1`,
+      data:`userId=${userId}`,
       method:'post',
     }).then(res=>{
       console.log(res)
@@ -128,10 +129,11 @@ methods:{
     })
   },
   updataaddress(addressId){
+    let userId=localStorage.getItem('userId')
       axios({
             url:"http://118.31.9.103/api/address/defaultAddress",
             method:"post",
-            data:`userId=1&addressId=${addressId}`
+            data:`userId=${userId}&addressId=${addressId}`
         }).then(res => {
             if (res.data.meta.state == 201) {
                 //更新成功过后，重新发送请求，让页面数据变化
